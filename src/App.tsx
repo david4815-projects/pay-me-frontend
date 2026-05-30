@@ -158,7 +158,7 @@ function App() {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    axios.get('http://localhost:3000/addresses')
+    axios.get(`${import.meta.env.VITE_API_URL ?? 'http://localhost:3000'}/addresses`)
       .then(res => setBitcoin(res.data.bitcoin))
       .catch(() => setError(true))
   }, [])
