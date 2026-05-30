@@ -11,22 +11,42 @@ interface BitcoinAddress {
   uri: string
 }
 
-function BitcoinCard({ data }: { data: BitcoinAddress }) {
-  const [copied, setCopied] = useState(false)
-  const [btcPrice, setBtcPrice] = useState<number | null>(null)
-  const [usdAmount, setUsdAmount] = useState('')
-  const [btcAmount, setBtcAmount] = useState('')
+function TotalReceived({ address, btcPrice }: { address: string; btcPrice: number | null }) {
+  const [totalReceived, setTotalReceived] = useState<number | null>(null)
 
   useEffect(() => {
-    const fetchPrice = () => {
-      axios.get('https://api.coinbase.com/v2/prices/BTC-USD/spot')
-        .then(res => setBtcPrice(parseFloat(res.data.data.amount)))
+    const fetchTotal = () => {
+      axios.get(`https://blockstream.info/api/address/${address}`)
+        .then(res => {
+          const satoshis: number = res.data.chain_stats.funded_txo_sum
+          setTotalReceived(satoshis / 100_000_000)
+        })
         .catch(() => {})
     }
-    fetchPrice()
-    const interval = setInterval(fetchPrice, 30000)
+    fetchTotal()
+    const interval = setInterval(fetchTotal, 5 * 60 * 1000)
     return () => clearInterval(interval)
-  }, [])
+  }, [address])
+
+  if (totalReceived === null) return null
+
+  return (
+    <div className="total-received">
+      <p className="total-label">Total donado</p>
+      <p className="total-btc">{totalReceived.toFixed(8)} BTC</p>
+      {btcPrice && (
+        <p className="total-usd">
+          ${(totalReceived * btcPrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+        </p>
+      )}
+    </div>
+  )
+}
+
+function BitcoinCard({ data, btcPrice }: { data: BitcoinAddress; btcPrice: number | null }) {
+  const [copied, setCopied] = useState(false)
+  const [usdAmount, setUsdAmount] = useState('')
+  const [btcAmount, setBtcAmount] = useState('')
 
   const handleUsdChange = (value: string) => {
     setUsdAmount(value)
@@ -49,11 +69,9 @@ function BitcoinCard({ data }: { data: BitcoinAddress }) {
   }
 
   const btcFloat = parseFloat(btcAmount)
-  // Strip trailing zeros: 0.00010000 → "0.0001", avoids BIP21 parsing issues
   const btcAmountForUri = btcAmount && btcFloat > 0
     ? btcFloat.toFixed(8).replace(/0+$/, '').replace(/\.$/, '')
     : null
-  // Exclude "0.00000000" which some wallets interpret as zero
   const currentUri = btcAmountForUri && btcAmountForUri !== '0'
     ? `${data.uri}?amount=${btcAmountForUri}`
     : data.uri
@@ -114,6 +132,7 @@ function BitcoinCard({ data }: { data: BitcoinAddress }) {
           <p>Ingresá un monto para generar el QR</p>
         </div>
       )}
+
       <p className="address">{data.address}</p>
       <div className="actions">
         <button onClick={handleCopy} className="btn-copy">
@@ -135,12 +154,24 @@ function BitcoinCard({ data }: { data: BitcoinAddress }) {
 
 function App() {
   const [bitcoin, setBitcoin] = useState<BitcoinAddress | null>(null)
+  const [btcPrice, setBtcPrice] = useState<number | null>(null)
   const [error, setError] = useState(false)
 
   useEffect(() => {
     axios.get('http://localhost:3000/addresses')
       .then(res => setBitcoin(res.data.bitcoin))
       .catch(() => setError(true))
+  }, [])
+
+  useEffect(() => {
+    const fetchPrice = () => {
+      axios.get('https://api.coinbase.com/v2/prices/BTC-USD/spot')
+        .then(res => setBtcPrice(parseFloat(res.data.data.amount)))
+        .catch(() => {})
+    }
+    fetchPrice()
+    const interval = setInterval(fetchPrice, 30000)
+    return () => clearInterval(interval)
   }, [])
 
   return (
@@ -154,7 +185,12 @@ function App() {
         <p className="error">No se pudo conectar con el servidor</p>
       )}
 
-      {bitcoin && <BitcoinCard data={bitcoin} />}
+      {bitcoin && (
+        <>
+          <TotalReceived address={bitcoin.address} btcPrice={btcPrice} />
+          <BitcoinCard data={bitcoin} btcPrice={btcPrice} />
+        </>
+      )}
     </div>
   )
 }

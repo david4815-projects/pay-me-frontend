@@ -133,6 +133,33 @@ h2 {
   margin-top: 2rem;
 }
 
+.total-received {
+  text-align: center;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.total-label {
+  font-size: 0.7rem;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.total-btc {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f7931a;
+  letter-spacing: -0.5px;
+}
+
+.total-usd {
+  font-size: 0.9rem;
+  color: #555;
+}
+
 .btc-price {
   font-size: 0.75rem;
   color: #555;
