@@ -1,0 +1,134 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #0a0a0a;
+  color: #f0f0f0;
+  font-family: 'Courier New', monospace;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: #f7931a;
+}
+
+header p {
+  color: #888;
+  margin-top: 0.5rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  transition: border-color 0.2s;
+}
+
+.card:hover {
+  border-color: #f7931a;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.icon {
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.qr-wrapper {
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.address {
+  font-size: 0.7rem;
+  color: #666;
+  word-break: break-all;
+  text-align: center;
+  background: #1a1a1a;
+  padding: 0.75rem;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.btn-copy, .btn-open {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-copy {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #f0f0f0;
+}
+
+.btn-copy:hover {
+  border-color: #f7931a;
+  color: #f7931a;
+}
+
+.btn-open {
+  background: #f7931a;
+  border: none;
+  color: #000;
+}
+
+.btn-open:hover {
+  background: #e8841a;
+}
+
+.error {
+  text-align: center;
+  color: #ff4444;
+  margin-top: 2rem;
+}
