@@ -132,3 +132,103 @@ h2 {
   color: #ff4444;
   margin-top: 2rem;
 }
+
+.btc-price {
+  font-size: 0.75rem;
+  color: #555;
+  letter-spacing: 0.03em;
+}
+
+.amount-display {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f7931a;
+  letter-spacing: 0.03em;
+}
+
+.converter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  transition: border-color 0.2s;
+}
+
+.input-group:focus-within {
+  border-color: #f7931a;
+}
+
+.input-group label {
+  font-size: 0.7rem;
+  color: #666;
+  font-weight: 700;
+  min-width: 28px;
+  letter-spacing: 0.05em;
+}
+
+.input-group input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #f0f0f0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+}
+
+.input-group input::placeholder {
+  color: #333;
+}
+
+.input-group input::-webkit-outer-spin-button,
+.input-group input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.swap-icon {
+  text-align: center;
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.qr-placeholder {
+  width: 204px;
+  height: 204px;
+  border: 2px dashed #2a2a2a;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #444;
+}
+
+.qr-placeholder-icon {
+  font-size: 2rem;
+  opacity: 0.3;
+}
+
+.qr-placeholder p {
+  font-size: 0.7rem;
+  text-align: center;
+  padding: 0 1rem;
+  line-height: 1.4;
+}
+
+.btn-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
