@@ -470,9 +470,14 @@ body {
   color: #ff4444;
 }
 
-/* Desktop — QR al final para no tapar la cara */
+/* Desktop */
 
 @media (min-width: 601px) {
+  .player-card {
+    min-height: 420px;
+    justify-content: flex-end;
+  }
+
   .player-header  { order: 1; }
   .player-balance { order: 2; }
   .card-actions   { order: 3; }
