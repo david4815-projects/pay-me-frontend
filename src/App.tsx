@@ -140,16 +140,8 @@ function App() {
     : undefined
 
   return (
-    <div
-      className="container"
-      style={bgImage ? {
-        backgroundImage: `url(${bgImage})`,
-        backgroundSize: '40%',
-        backgroundPosition: 'center center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
-      } : undefined}
-    >
+    <div className="container">
+      {bgImage && <div className="global-bg" style={{ backgroundImage: `url(${bgImage})` }} />}
 
       {error && <p className="error">No se pudo conectar con el servidor</p>}
 
