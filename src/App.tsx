@@ -91,7 +91,7 @@ function PlayerCard({
 
       <div className="card-actions">
         <button onClick={handleCopy} className="btn-copy">
-          {copied ? '✓ Copied!' : '📋 Copy Address'}
+          {copied ? '✓ Copied!' : '📋 Copy BTC Address'}
         </button>
         {isMobile && btcAmountForUri && (
           <a href={currentUri} className="btn-open">
