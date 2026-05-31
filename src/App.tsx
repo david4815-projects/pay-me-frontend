@@ -31,7 +31,6 @@ function PlayerCard({
   address: string
   btcAmountForUri: string | null
 }) {
-
   const [copied, setCopied] = useState(false)
   const uri = `bitcoin:${address}`
   const currentUri = btcAmountForUri ? `${uri}?amount=${btcAmountForUri}` : uri
@@ -57,18 +56,21 @@ function PlayerCard({
         </p>
       </div>
 
-      {btcAmountForUri ? (
-        <>
-          <div className="qr-wrapper">
-            <QRCodeSVG value={currentUri} size={150} />
+      {/* QR solo en desktop */}
+      {!isMobile && (
+        btcAmountForUri ? (
+          <>
+            <div className="qr-wrapper">
+              <QRCodeSVG value={currentUri} size={150} />
+            </div>
+            <p className="amount-display">{btcAmountForUri} BTC</p>
+          </>
+        ) : (
+          <div className="qr-placeholder">
+            <span className="qr-placeholder-icon">₿</span>
+            <p>Ingresá un monto para generar el QR</p>
           </div>
-          <p className="amount-display">{btcAmountForUri} BTC</p>
-        </>
-      ) : (
-        <div className="qr-placeholder">
-          <span className="qr-placeholder-icon">₿</span>
-          <p>Ingresá un monto para generar el QR</p>
-        </div>
+        )
       )}
 
       <div className="card-actions">
@@ -145,6 +147,39 @@ function App() {
 
       {data && (
         <>
+          {/* Converter arriba — el usuario elige el monto antes de elegir jugador */}
+          <div className="converter-section">
+            <p className="converter-title">¿Cuánto querés donar?</p>
+            <div className="converter">
+              <div className="input-group">
+                <label>USD</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="0.00"
+                  value={usdAmount}
+                  onChange={e => handleUsdChange(e.target.value)}
+                />
+              </div>
+              <span className="swap-icon">⇅</span>
+              <div className="input-group">
+                <label>BTC</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="0.00000000"
+                  value={btcAmount}
+                  onChange={e => handleBtcChange(e.target.value)}
+                />
+              </div>
+            </div>
+            {data.btcPrice > 0 && (
+              <p className="btc-price">1 BTC = ${data.btcPrice.toLocaleString('en-US')} USD</p>
+            )}
+          </div>
+
           <div className="progress-row">
             <span className="progress-label">Messi 50%</span>
             <div className="progress-bar">
@@ -162,9 +197,7 @@ function App() {
               address={data.address}
               btcAmountForUri={btcAmountForUri}
             />
-
             <div className="vs-divider">⚔️</div>
-
             <PlayerCard
               player={players[1]}
               btc={totalBtc}
@@ -173,36 +206,6 @@ function App() {
               btcAmountForUri={btcAmountForUri}
             />
           </div>
-
-          <div className="converter">
-            <div className="input-group">
-              <label>USD</label>
-              <input
-                type="number"
-                min="0"
-                step="any"
-                placeholder="0.00"
-                value={usdAmount}
-                onChange={e => handleUsdChange(e.target.value)}
-              />
-            </div>
-            <span className="swap-icon">⇅</span>
-            <div className="input-group">
-              <label>BTC</label>
-              <input
-                type="number"
-                min="0"
-                step="any"
-                placeholder="0.00000000"
-                value={btcAmount}
-                onChange={e => handleBtcChange(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {data.btcPrice > 0 && (
-            <p className="btc-price">1 BTC = ${data.btcPrice.toLocaleString('en-US')} USD</p>
-          )}
         </>
       )}
     </div>
