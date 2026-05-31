@@ -590,7 +590,7 @@ body {
 
 @media (min-width: 601px) {
   .player-card {
-    min-height: 420px;
+    min-height: 560px;
     justify-content: flex-end;
   }
 
