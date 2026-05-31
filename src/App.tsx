@@ -20,7 +20,6 @@ const players = [
 
 function PlayerCard({
   player,
-  btc,
   usd,
   address,
   btcAmountForUri,
