@@ -14,8 +14,8 @@ interface VersusData {
 }
 
 const players = [
-  { id: 'messi',   name: 'Messi',   flag: '🇦🇷', label: 'Argentina' },
-  { id: 'ronaldo', name: 'Ronaldo', flag: '🇵🇹', label: 'Portugal'  },
+  { id: 'messi',   name: 'Messi',   flag: '🇦🇷', label: 'Argentina', image: '/messi.png' },
+  { id: 'ronaldo', name: 'Ronaldo', flag: '🇵🇹', label: 'Portugal',  image: '/cr7.png'   },
 ]
 
 function PlayerCard({
@@ -31,6 +31,7 @@ function PlayerCard({
   address: string
   btcAmountForUri: string | null
 }) {
+
   const [copied, setCopied] = useState(false)
   const uri = `bitcoin:${address}`
   const currentUri = btcAmountForUri ? `${uri}?amount=${btcAmountForUri}` : uri
@@ -42,7 +43,7 @@ function PlayerCard({
   }
 
   return (
-    <div className="player-card">
+    <div className="player-card" style={{ backgroundImage: `url(${player.image})` }}>
       <div className="player-header">
         <span className="player-flag">{player.flag}</span>
         <h2 className="player-name">{player.name}</h2>

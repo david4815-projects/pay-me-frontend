@@ -99,7 +99,7 @@ header p {
 /* Player card */
 
 .player-card {
-  background: #111;
+  background: #111 center/cover no-repeat;
   border: 1px solid #222;
   border-radius: 16px;
   padding: 1.5rem 1rem;
@@ -108,6 +108,21 @@ header p {
   align-items: center;
   gap: 1rem;
   transition: border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.player-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  border-radius: 16px;
+}
+
+.player-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .player-card:hover {
