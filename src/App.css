@@ -223,7 +223,7 @@ body {
 /* Player card */
 
 .player-card {
-  background: #111 bottom/contain no-repeat;
+  background: #111 top center/cover no-repeat;
   border: 1px solid #222;
   border-radius: 16px;
   padding: 1.25rem 1rem;
