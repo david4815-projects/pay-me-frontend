@@ -600,6 +600,7 @@ body {
   .qr-wrapper,
   .qr-placeholder { order: 4; }
   .amount-display { order: 5; }
+  .btn-vote       { order: 99; margin-top: auto; }
 }
 
 /* Mobile */
