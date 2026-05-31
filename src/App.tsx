@@ -27,17 +27,54 @@ const players = [
   { id: 'ronaldo', name: 'Ronaldo', flag: '🇵🇹', label: 'Portugal',  image: '/cr7.png'   },
 ]
 
-function PlayerCard({
+function VoteModal({
   player,
   playerData,
-  btcAmountForUri,
+  btcPrice,
+  onClose,
 }: {
   player: typeof players[0]
   playerData: PlayerData
-  btcAmountForUri: string | null
+  btcPrice: number
+  onClose: () => void
 }) {
+  const [usdAmount, setUsdAmount] = useState('1')
+  const [btcAmount, setBtcAmount] = useState('')
   const [copied, setCopied] = useState(false)
-  const [showQr, setShowQr] = useState(false)
+  const initialized = useRef(false)
+
+  useEffect(() => {
+    if (btcPrice && !initialized.current) {
+      initialized.current = true
+      setBtcAmount((1 / btcPrice).toFixed(8))
+    }
+  }, [btcPrice])
+
+  const handleUsdChange = (value: string) => {
+    setUsdAmount(value)
+    if (btcPrice && value !== '') {
+      const btc = parseFloat(value) / btcPrice
+      setBtcAmount(isNaN(btc) ? '' : btc.toFixed(8))
+    } else {
+      setBtcAmount('')
+    }
+  }
+
+  const handleBtcChange = (value: string) => {
+    setBtcAmount(value)
+    if (btcPrice && value !== '') {
+      const usd = parseFloat(value) * btcPrice
+      setUsdAmount(isNaN(usd) ? '' : usd.toFixed(2))
+    } else {
+      setUsdAmount('')
+    }
+  }
+
+  const btcFloat = parseFloat(btcAmount)
+  const btcAmountForUri = btcAmount && btcFloat > 0
+    ? btcFloat.toFixed(8).replace(/0+$/, '').replace(/\.$/, '')
+    : null
+
   const uri = `bitcoin:${playerData.address}`
   const currentUri = btcAmountForUri ? `${uri}?amount=${btcAmountForUri}` : uri
 
@@ -47,6 +84,88 @@ function PlayerCard({
     setTimeout(() => setCopied(false), 2000)
   }
 
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>✕</button>
+
+        <div className="modal-header">
+          <span className="modal-flag">{player.flag}</span>
+          <h2 className="modal-title">Vote for {player.name}</h2>
+          <p className="modal-label">{player.label}</p>
+        </div>
+
+        <p className="converter-title">Choose your GOAT! 🐐</p>
+        <p className="converter-subtitle">Donation amount</p>
+
+        <div className="converter">
+          <div className="input-group">
+            <label>USD</label>
+            <input
+              type="number"
+              min="0"
+              step="any"
+              placeholder="0.00"
+              value={usdAmount}
+              onChange={e => handleUsdChange(e.target.value)}
+            />
+          </div>
+          <span className="swap-icon">⇅</span>
+          <div className="input-group">
+            <label>BTC</label>
+            <input
+              type="number"
+              min="0"
+              step="any"
+              placeholder="0.00000000"
+              value={btcAmount}
+              onChange={e => handleBtcChange(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {btcPrice > 0 && (
+          <p className="btc-price">1 BTC = ${btcPrice.toLocaleString('en-US')} USD</p>
+        )}
+
+        {btcAmountForUri ? (
+          <div className="modal-qr">
+            <div className="qr-wrapper">
+              <QRCodeSVG value={currentUri} size={160} />
+            </div>
+            <p className="amount-display">{btcAmountForUri} BTC</p>
+          </div>
+        ) : (
+          <div className="qr-placeholder modal-qr-placeholder">
+            <span className="qr-placeholder-icon">₿</span>
+            <p>Enter an amount to generate the QR</p>
+          </div>
+        )}
+
+        <div className="modal-actions">
+          <button onClick={handleCopy} className="btn-copy">
+            {copied ? '✓ Copied!' : '📋 Copy BTC Address'}
+          </button>
+          {isMobile && btcAmountForUri && (
+            <a href={currentUri} className="btn-open">
+              👛 Open Wallet
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function PlayerCard({
+  player,
+  playerData,
+  onVote,
+}: {
+  player: typeof players[0]
+  playerData: PlayerData
+  onVote: () => void
+}) {
   return (
     <div className="player-card" style={{ backgroundImage: `url(${player.image})` }}>
       <div className="player-header">
@@ -62,43 +181,9 @@ function PlayerCard({
         <p className="player-votes">{playerData.votes} {playerData.votes === 1 ? 'vote' : 'votes'}</p>
       </div>
 
-      {!isMobile && (
-        showQr ? (
-          <>
-            {btcAmountForUri ? (
-              <>
-                <div className="qr-wrapper">
-                  <QRCodeSVG value={currentUri} size={150} />
-                </div>
-                <p className="amount-display">{btcAmountForUri} BTC</p>
-              </>
-            ) : (
-              <div className="qr-placeholder">
-                <span className="qr-placeholder-icon">₿</span>
-                <p>Enter an amount to generate the QR</p>
-              </div>
-            )}
-            <button className="btn-toggle-qr" onClick={() => setShowQr(false)}>
-              Hide QR ▲
-            </button>
-          </>
-        ) : (
-          <button className="btn-toggle-qr" onClick={() => setShowQr(true)}>
-            Show QR ▼
-          </button>
-        )
-      )}
-
-      <div className="card-actions">
-        <button onClick={handleCopy} className="btn-copy">
-          {copied ? '✓ Copied!' : '📋 Copy BTC Address'}
-        </button>
-        {isMobile && btcAmountForUri && (
-          <a href={currentUri} className="btn-open">
-            👛 Open Wallet
-          </a>
-        )}
-      </div>
+      <button className="btn-vote" onClick={onVote}>
+        Vote for {player.name}
+      </button>
     </div>
   )
 }
@@ -106,16 +191,7 @@ function PlayerCard({
 function App() {
   const [data, setData] = useState<VersusData | null>(null)
   const [error, setError] = useState(false)
-  const [usdAmount, setUsdAmount] = useState('1')
-  const [btcAmount, setBtcAmount] = useState('')
-  const initialized = useRef(false)
-
-  useEffect(() => {
-    if (data?.btcPrice && !initialized.current) {
-      initialized.current = true
-      setBtcAmount((1 / data.btcPrice).toFixed(8))
-    }
-  }, [data])
+  const [selectedPlayer, setSelectedPlayer] = useState<'messi' | 'ronaldo' | null>(null)
 
   useEffect(() => {
     const fetchData = () => {
@@ -128,50 +204,23 @@ function App() {
     return () => clearInterval(interval)
   }, [])
 
-  const handleUsdChange = (value: string) => {
-    setUsdAmount(value)
-    if (data?.btcPrice && value !== '') {
-      const btc = parseFloat(value) / data.btcPrice
-      setBtcAmount(isNaN(btc) ? '' : btc.toFixed(8))
-    } else {
-      setBtcAmount('')
-    }
-  }
-
-  const handleBtcChange = (value: string) => {
-    setBtcAmount(value)
-    if (data?.btcPrice && value !== '') {
-      const usd = parseFloat(value) * data.btcPrice
-      setUsdAmount(isNaN(usd) ? '' : usd.toFixed(2))
-    } else {
-      setUsdAmount('')
-    }
-  }
-
-  const btcFloat = parseFloat(btcAmount)
-  const btcAmountForUri = btcAmount && btcFloat > 0
-    ? btcFloat.toFixed(8).replace(/0+$/, '').replace(/\.$/, '')
-    : null
-
   const leader = data
     ? data.messi.percent >= data.ronaldo.percent ? 'messi' : 'ronaldo'
     : null
 
-  const bgImage = leader === 'messi'
-    ? '/mesiFondo.png'
-    : leader === 'ronaldo'
-    ? '/cr7Fondo.png'
+  const bgImage = leader === 'messi' ? '/mesiFondo.png'
+    : leader === 'ronaldo' ? '/cr7Fondo.png'
     : undefined
 
-  const leadingBy = data
-    ? Math.abs(data.messi.totalUsd - data.ronaldo.totalUsd)
-    : 0
-
+  const leadingBy = data ? Math.abs(data.messi.totalUsd - data.ronaldo.totalUsd) : 0
   const leaderName = data
     ? data.messi.percent > data.ronaldo.percent ? 'Messi'
     : data.ronaldo.percent > data.messi.percent ? 'Ronaldo'
     : null
     : null
+
+  const selectedPlayerObj = selectedPlayer === 'messi' ? players[0] : players[1]
+  const selectedPlayerData = selectedPlayer === 'messi' ? data?.messi : data?.ronaldo
 
   return (
     <div className="container">
@@ -184,39 +233,6 @@ function App() {
           <div className="site-header">
             <p className="site-tagline">🏆 Community GOAT Battle</p>
             <p className="site-description">Every satoshi is a vote. Support your legend.</p>
-          </div>
-
-          <div className="converter-section">
-            <p className="converter-title">Choose your GOAT! 🐐</p>
-            <p className="converter-subtitle">Donation amount</p>
-            <div className="converter">
-              <div className="input-group">
-                <label>USD</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="any"
-                  placeholder="0.00"
-                  value={usdAmount}
-                  onChange={e => handleUsdChange(e.target.value)}
-                />
-              </div>
-              <span className="swap-icon">⇅</span>
-              <div className="input-group">
-                <label>BTC</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="any"
-                  placeholder="0.00000000"
-                  value={btcAmount}
-                  onChange={e => handleBtcChange(e.target.value)}
-                />
-              </div>
-            </div>
-            {data.btcPrice > 0 && (
-              <p className="btc-price">1 BTC = ${data.btcPrice.toLocaleString('en-US')} USD</p>
-            )}
           </div>
 
           <div className="stats-bar">
@@ -249,15 +265,24 @@ function App() {
             <PlayerCard
               player={players[0]}
               playerData={data.messi}
-              btcAmountForUri={btcAmountForUri}
+              onVote={() => setSelectedPlayer('messi')}
             />
             <div className="vs-divider">⚔️</div>
             <PlayerCard
               player={players[1]}
               playerData={data.ronaldo}
-              btcAmountForUri={btcAmountForUri}
+              onVote={() => setSelectedPlayer('ronaldo')}
             />
           </div>
+
+          {selectedPlayer && selectedPlayerData && (
+            <VoteModal
+              player={selectedPlayerObj}
+              playerData={selectedPlayerData}
+              btcPrice={data.btcPrice}
+              onClose={() => setSelectedPlayer(null)}
+            />
+          )}
         </>
       )}
     </div>
