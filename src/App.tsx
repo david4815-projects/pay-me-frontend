@@ -4,125 +4,62 @@ import { QRCodeSVG } from 'qrcode.react'
 import './App.css'
 
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
-interface BitcoinAddress {
+interface VersusData {
+  btcPrice: number
+  totalBtc: number
+  totalUsd: number
   address: string
-  network: string
-  uri: string
 }
 
-function TotalReceived({ address, btcPrice }: { address: string; btcPrice: number | null }) {
-  const [totalReceived, setTotalReceived] = useState<number | null>(null)
+const players = [
+  { id: 'messi',   name: 'Messi',   flag: '🇦🇷', label: 'Argentina' },
+  { id: 'ronaldo', name: 'Ronaldo', flag: '🇵🇹', label: 'Portugal'  },
+]
 
-  useEffect(() => {
-    const fetchTotal = () => {
-      axios.get(`https://blockstream.info/api/address/${address}`)
-        .then(res => {
-          const satoshis: number = res.data.chain_stats.funded_txo_sum
-          setTotalReceived(satoshis / 100_000_000)
-        })
-        .catch(() => {})
-    }
-    fetchTotal()
-    const interval = setInterval(fetchTotal, 5 * 60 * 1000)
-    return () => clearInterval(interval)
-  }, [address])
-
-  if (totalReceived === null) return null
-
-  return (
-    <div className="total-received">
-      <p className="total-label">Total donado</p>
-      <p className="total-btc">{totalReceived.toFixed(8)} BTC</p>
-      {btcPrice && (
-        <p className="total-usd">
-          ${(totalReceived * btcPrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
-        </p>
-      )}
-    </div>
-  )
-}
-
-function BitcoinCard({ data, btcPrice }: { data: BitcoinAddress; btcPrice: number | null }) {
+function PlayerCard({
+  player,
+  btc,
+  usd,
+  address,
+  btcAmountForUri,
+}: {
+  player: typeof players[0]
+  btc: number
+  usd: number
+  address: string
+  btcAmountForUri: string | null
+}) {
   const [copied, setCopied] = useState(false)
-  const [usdAmount, setUsdAmount] = useState('')
-  const [btcAmount, setBtcAmount] = useState('')
-
-  const handleUsdChange = (value: string) => {
-    setUsdAmount(value)
-    if (btcPrice && value !== '') {
-      const btc = parseFloat(value) / btcPrice
-      setBtcAmount(isNaN(btc) ? '' : btc.toFixed(8))
-    } else {
-      setBtcAmount('')
-    }
-  }
-
-  const handleBtcChange = (value: string) => {
-    setBtcAmount(value)
-    if (btcPrice && value !== '') {
-      const usd = parseFloat(value) * btcPrice
-      setUsdAmount(isNaN(usd) ? '' : usd.toFixed(2))
-    } else {
-      setUsdAmount('')
-    }
-  }
-
-  const btcFloat = parseFloat(btcAmount)
-  const btcAmountForUri = btcAmount && btcFloat > 0
-    ? btcFloat.toFixed(8).replace(/0+$/, '').replace(/\.$/, '')
-    : null
-  const currentUri = btcAmountForUri && btcAmountForUri !== '0'
-    ? `${data.uri}?amount=${btcAmountForUri}`
-    : data.uri
+  const uri = `bitcoin:${address}`
+  const currentUri = btcAmountForUri ? `${uri}?amount=${btcAmountForUri}` : uri
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(data.address)
+    navigator.clipboard.writeText(address)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
   return (
-    <div className="card">
-      <div className="card-header">
-        <span className="icon">₿</span>
-        <h2>{data.network}</h2>
+    <div className="player-card">
+      <div className="player-header">
+        <span className="player-flag">{player.flag}</span>
+        <h2 className="player-name">{player.name}</h2>
+        <p className="player-label">{player.label}</p>
       </div>
 
-      {btcPrice && (
-        <p className="btc-price">1 BTC = ${btcPrice.toLocaleString('en-US')} USD</p>
-      )}
-
-      <div className="converter">
-        <div className="input-group">
-          <label>USD</label>
-          <input
-            type="number"
-            min="0"
-            step="any"
-            placeholder="0.00"
-            value={usdAmount}
-            onChange={e => handleUsdChange(e.target.value)}
-          />
-        </div>
-        <span className="swap-icon">⇅</span>
-        <div className="input-group">
-          <label>BTC</label>
-          <input
-            type="number"
-            min="0"
-            step="any"
-            placeholder="0.00000000"
-            value={btcAmount}
-            onChange={e => handleBtcChange(e.target.value)}
-          />
-        </div>
+      <div className="player-balance">
+        <p className="player-btc">{btc.toFixed(8)} BTC</p>
+        <p className="player-usd">
+          ${usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+        </p>
       </div>
 
       {btcAmountForUri ? (
         <>
           <div className="qr-wrapper">
-            <QRCodeSVG value={currentUri} size={180} />
+            <QRCodeSVG value={currentUri} size={150} />
           </div>
           <p className="amount-display">{btcAmountForUri} BTC</p>
         </>
@@ -133,8 +70,7 @@ function BitcoinCard({ data, btcPrice }: { data: BitcoinAddress; btcPrice: numbe
         </div>
       )}
 
-      <p className="address">{data.address}</p>
-      <div className="actions">
+      <div className="card-actions">
         <button onClick={handleCopy} className="btn-copy">
           {copied ? '✓ Copiado' : 'Copiar dirección'}
         </button>
@@ -144,7 +80,7 @@ function BitcoinCard({ data, btcPrice }: { data: BitcoinAddress; btcPrice: numbe
             className={`btn-open${btcAmountForUri ? '' : ' btn-disabled'}`}
             aria-disabled={!btcAmountForUri}
           >
-            Abrir en wallet
+            Abrir wallet
           </a>
         )}
       </div>
@@ -153,42 +89,119 @@ function BitcoinCard({ data, btcPrice }: { data: BitcoinAddress; btcPrice: numbe
 }
 
 function App() {
-  const [bitcoin, setBitcoin] = useState<BitcoinAddress | null>(null)
-  const [btcPrice, setBtcPrice] = useState<number | null>(null)
+  const [data, setData] = useState<VersusData | null>(null)
   const [error, setError] = useState(false)
+  const [usdAmount, setUsdAmount] = useState('')
+  const [btcAmount, setBtcAmount] = useState('')
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL ?? 'http://localhost:3000'}/addresses`)
-      .then(res => setBitcoin(res.data.bitcoin))
-      .catch(() => setError(true))
-  }, [])
-
-  useEffect(() => {
-    const fetchPrice = () => {
-      axios.get('https://api.coinbase.com/v2/prices/BTC-USD/spot')
-        .then(res => setBtcPrice(parseFloat(res.data.data.amount)))
-        .catch(() => {})
+    const fetchData = () => {
+      axios.get(`${API_URL}/versus`)
+        .then(res => setData(res.data))
+        .catch(() => setError(true))
     }
-    fetchPrice()
-    const interval = setInterval(fetchPrice, 30000)
+    fetchData()
+    const interval = setInterval(fetchData, 10_000)
     return () => clearInterval(interval)
   }, [])
+
+  const handleUsdChange = (value: string) => {
+    setUsdAmount(value)
+    if (data?.btcPrice && value !== '') {
+      const btc = parseFloat(value) / data.btcPrice
+      setBtcAmount(isNaN(btc) ? '' : btc.toFixed(8))
+    } else {
+      setBtcAmount('')
+    }
+  }
+
+  const handleBtcChange = (value: string) => {
+    setBtcAmount(value)
+    if (data?.btcPrice && value !== '') {
+      const usd = parseFloat(value) * data.btcPrice
+      setUsdAmount(isNaN(usd) ? '' : usd.toFixed(2))
+    } else {
+      setUsdAmount('')
+    }
+  }
+
+  const btcFloat = parseFloat(btcAmount)
+  const btcAmountForUri = btcAmount && btcFloat > 0
+    ? btcFloat.toFixed(8).replace(/0+$/, '').replace(/\.$/, '')
+    : null
+
+  const totalBtc = data?.totalBtc ?? 0
+  const totalUsd = data?.totalUsd ?? 0
 
   return (
     <div className="container">
       <header>
-        <h1>Donar Bitcoin</h1>
-        <p>Escaneá el QR o copiá la dirección</p>
+        <h1>⚽ Messi <span className="vs">vs</span> Ronaldo ⚽</h1>
+        <p>Apoyá a tu jugador donando Bitcoin</p>
       </header>
 
-      {error && (
-        <p className="error">No se pudo conectar con el servidor</p>
-      )}
+      {error && <p className="error">No se pudo conectar con el servidor</p>}
 
-      {bitcoin && (
+      {data && (
         <>
-          <TotalReceived address={bitcoin.address} btcPrice={btcPrice} />
-          <BitcoinCard data={bitcoin} btcPrice={btcPrice} />
+          <div className="progress-row">
+            <span className="progress-label">Messi 50%</span>
+            <div className="progress-bar">
+              <div className="progress-messi" style={{ width: '50%' }} />
+              <div className="progress-ronaldo" style={{ width: '50%' }} />
+            </div>
+            <span className="progress-label">50% Ronaldo</span>
+          </div>
+
+          <div className="versus-grid">
+            <PlayerCard
+              player={players[0]}
+              btc={totalBtc}
+              usd={totalUsd}
+              address={data.address}
+              btcAmountForUri={btcAmountForUri}
+            />
+
+            <div className="vs-divider">⚔️</div>
+
+            <PlayerCard
+              player={players[1]}
+              btc={totalBtc}
+              usd={totalUsd}
+              address={data.address}
+              btcAmountForUri={btcAmountForUri}
+            />
+          </div>
+
+          <div className="converter">
+            <div className="input-group">
+              <label>USD</label>
+              <input
+                type="number"
+                min="0"
+                step="any"
+                placeholder="0.00"
+                value={usdAmount}
+                onChange={e => handleUsdChange(e.target.value)}
+              />
+            </div>
+            <span className="swap-icon">⇅</span>
+            <div className="input-group">
+              <label>BTC</label>
+              <input
+                type="number"
+                min="0"
+                step="any"
+                placeholder="0.00000000"
+                value={btcAmount}
+                onChange={e => handleBtcChange(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {data.btcPrice > 0 && (
+            <p className="btc-price">1 BTC = ${data.btcPrice.toLocaleString('en-US')} USD</p>
+          )}
         </>
       )}
     </div>

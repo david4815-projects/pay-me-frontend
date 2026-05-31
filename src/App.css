@@ -12,98 +12,207 @@ body {
 }
 
 .container {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 3rem 1.5rem;
-}
-
-header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-header h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  letter-spacing: -1px;
-  color: #f7931a;
-}
-
-header p {
-  color: #888;
-  margin-top: 0.5rem;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-}
-
-.card {
-  background: #111;
-  border: 1px solid #222;
-  border-radius: 16px;
-  padding: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
-  transition: border-color 0.2s;
+  gap: 2rem;
 }
 
-.card:hover {
-  border-color: #f7931a;
+/* Header */
+
+header {
+  text-align: center;
 }
 
-.card-header {
+header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.vs {
+  color: #f7931a;
+  font-style: italic;
+}
+
+header p {
+  color: #555;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Progress bar */
+
+.progress-row {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  width: 100%;
 }
 
-.icon {
+.progress-label {
+  font-size: 0.65rem;
+  color: #555;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+}
+
+.progress-messi {
+  background: #74b9e8;
+  height: 100%;
+  transition: width 0.6s ease;
+}
+
+.progress-ronaldo {
+  background: #e87474;
+  height: 100%;
+  transition: width 0.6s ease;
+}
+
+/* Versus grid */
+
+.versus-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+}
+
+.vs-divider {
   font-size: 1.75rem;
+  text-align: center;
+  user-select: none;
 }
 
-h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
+/* Player card */
+
+.player-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 16px;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  transition: border-color 0.2s;
 }
+
+.player-card:hover {
+  border-color: #f7931a;
+}
+
+.player-header {
+  text-align: center;
+}
+
+.player-flag {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.player-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.player-label {
+  font-size: 0.65rem;
+  color: #444;
+  margin-top: 0.2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.player-balance {
+  text-align: center;
+}
+
+.player-btc {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f7931a;
+}
+
+.player-usd {
+  font-size: 0.7rem;
+  color: #555;
+  margin-top: 0.2rem;
+}
+
+/* QR */
 
 .qr-wrapper {
   background: white;
-  padding: 12px;
-  border-radius: 12px;
+  padding: 10px;
+  border-radius: 10px;
 }
 
-.address {
-  font-size: 0.7rem;
-  color: #666;
-  word-break: break-all;
-  text-align: center;
-  background: #1a1a1a;
-  padding: 0.75rem;
-  border-radius: 8px;
-  width: 100%;
-}
-
-.actions {
+.qr-placeholder {
+  width: 170px;
+  height: 170px;
+  border: 2px dashed #2a2a2a;
+  border-radius: 10px;
   display: flex;
-  gap: 0.75rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #333;
+}
+
+.qr-placeholder-icon {
+  font-size: 1.75rem;
+  opacity: 0.3;
+}
+
+.qr-placeholder p {
+  font-size: 0.6rem;
+  text-align: center;
+  padding: 0 0.75rem;
+  line-height: 1.4;
+}
+
+.amount-display {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f7931a;
+}
+
+/* Card actions */
+
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   width: 100%;
 }
 
-.btn-copy, .btn-open {
-  flex: 1;
-  padding: 0.75rem;
+.btn-copy,
+.btn-open {
+  width: 100%;
+  padding: 0.6rem;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
   transition: all 0.2s;
+  font-family: 'Courier New', monospace;
 }
 
 .btn-copy {
@@ -121,63 +230,27 @@ h2 {
   background: #f7931a;
   border: none;
   color: #000;
+  display: block;
 }
 
 .btn-open:hover {
   background: #e8841a;
 }
 
-.error {
-  text-align: center;
-  color: #ff4444;
-  margin-top: 2rem;
+.btn-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
-.total-received {
-  text-align: center;
-  margin-bottom: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.total-label {
-  font-size: 0.7rem;
-  color: #444;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-}
-
-.total-btc {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #f7931a;
-  letter-spacing: -0.5px;
-}
-
-.total-usd {
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.btc-price {
-  font-size: 0.75rem;
-  color: #555;
-  letter-spacing: 0.03em;
-}
-
-.amount-display {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #f7931a;
-  letter-spacing: 0.03em;
-}
+/* Converter */
 
 .converter {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
   width: 100%;
+  max-width: 380px;
 }
 
 .input-group {
@@ -226,36 +299,33 @@ h2 {
   text-align: center;
   color: #333;
   font-size: 0.9rem;
-  line-height: 1;
 }
 
-.qr-placeholder {
-  width: 204px;
-  height: 204px;
-  border: 2px dashed #2a2a2a;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  color: #444;
-}
-
-.qr-placeholder-icon {
-  font-size: 2rem;
-  opacity: 0.3;
-}
-
-.qr-placeholder p {
+.btc-price {
   font-size: 0.7rem;
-  text-align: center;
-  padding: 0 1rem;
-  line-height: 1.4;
+  color: #444;
+  letter-spacing: 0.03em;
 }
 
-.btn-disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  pointer-events: none;
+/* Error */
+
+.error {
+  text-align: center;
+  color: #ff4444;
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .versus-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vs-divider {
+    font-size: 2rem;
+  }
+
+  .player-card {
+    width: 100%;
+  }
 }
