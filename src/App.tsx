@@ -26,12 +26,12 @@ function PlayerCard({
   btcAmountForUri,
 }: {
   player: typeof players[0]
-  btc: number
   usd: number
   address: string
   btcAmountForUri: string | null
 }) {
   const [copied, setCopied] = useState(false)
+
   const uri = `bitcoin:${address}`
   const currentUri = btcAmountForUri ? `${uri}?amount=${btcAmountForUri}` : uri
 
@@ -50,7 +50,6 @@ function PlayerCard({
       </div>
 
       <div className="player-balance">
-        <p className="player-btc">{btc.toFixed(8)} BTC</p>
         <p className="player-usd">
           ${usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
         </p>
@@ -133,7 +132,6 @@ function App() {
     ? btcFloat.toFixed(8).replace(/0+$/, '').replace(/\.$/, '')
     : null
 
-  const totalBtc = data?.totalBtc ?? 0
   const totalUsd = data?.totalUsd ?? 0
 
   return (
@@ -192,7 +190,6 @@ function App() {
           <div className="versus-grid">
             <PlayerCard
               player={players[0]}
-              btc={totalBtc}
               usd={totalUsd}
               address={data.address}
               btcAmountForUri={btcAmountForUri}
@@ -200,7 +197,6 @@ function App() {
             <div className="vs-divider">⚔️</div>
             <PlayerCard
               player={players[1]}
-              btc={totalBtc}
               usd={totalUsd}
               address={data.address}
               btcAmountForUri={btcAmountForUri}
