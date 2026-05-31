@@ -150,10 +150,6 @@ function App() {
         backgroundAttachment: 'fixed',
       } : undefined}
     >
-      <header>
-        <h1>⚽ Messi <span className="vs">vs</span> Ronaldo ⚽</h1>
-        <p>Apoyá a tu jugador donando Bitcoin</p>
-      </header>
 
       {error && <p className="error">No se pudo conectar con el servidor</p>}
 
