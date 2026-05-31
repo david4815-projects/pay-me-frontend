@@ -129,8 +129,27 @@ function App() {
     ? btcFloat.toFixed(8).replace(/0+$/, '').replace(/\.$/, '')
     : null
 
+  const leader = data
+    ? data.messi.percent >= data.ronaldo.percent ? 'messi' : 'ronaldo'
+    : null
+
+  const bgImage = leader === 'messi'
+    ? '/mesiFondo.png'
+    : leader === 'ronaldo'
+    ? '/cr7Fondo.png'
+    : undefined
+
   return (
-    <div className="container">
+    <div
+      className="container"
+      style={bgImage ? {
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: '40%',
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+      } : undefined}
+    >
       <header>
         <h1>⚽ Messi <span className="vs">vs</span> Ronaldo ⚽</h1>
         <p>Apoyá a tu jugador donando Bitcoin</p>
