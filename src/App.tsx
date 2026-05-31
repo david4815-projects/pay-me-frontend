@@ -156,7 +156,7 @@ function App() {
       {data && (
         <>
           <div className="converter-section">
-            <p className="converter-title">¿Cuánto querés donar?</p>
+            <p className="converter-title">Choose your GOAT! 🐐</p>
             <div className="converter">
               <div className="input-group">
                 <label>USD</label>
