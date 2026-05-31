@@ -141,7 +141,7 @@ header p {
 /* Player card */
 
 .player-card {
-  background: #111 center/cover no-repeat;
+  background: #111 bottom/contain no-repeat;
   border: 1px solid #222;
   border-radius: 16px;
   padding: 1.5rem 1rem;
