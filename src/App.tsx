@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { QRCodeSVG } from 'qrcode.react'
 import './App.css'
@@ -90,8 +90,16 @@ function PlayerCard({
 function App() {
   const [data, setData] = useState<VersusData | null>(null)
   const [error, setError] = useState(false)
-  const [usdAmount, setUsdAmount] = useState('')
+  const [usdAmount, setUsdAmount] = useState('1')
   const [btcAmount, setBtcAmount] = useState('')
+  const initialized = useRef(false)
+
+  useEffect(() => {
+    if (data?.btcPrice && !initialized.current) {
+      initialized.current = true
+      setBtcAmount((1 / data.btcPrice).toFixed(8))
+    }
+  }, [data])
 
   useEffect(() => {
     const fetchData = () => {
