@@ -75,12 +75,8 @@ function PlayerCard({
         <button onClick={handleCopy} className="btn-copy">
           {copied ? '✓ Copiado' : 'Copiar dirección'}
         </button>
-        {isMobile && (
-          <a
-            href={btcAmountForUri ? currentUri : undefined}
-            className={`btn-open${btcAmountForUri ? '' : ' btn-disabled'}`}
-            aria-disabled={!btcAmountForUri}
-          >
+        {isMobile && btcAmountForUri && (
+          <a href={currentUri} className="btn-open">
             Abrir wallet
           </a>
         )}
