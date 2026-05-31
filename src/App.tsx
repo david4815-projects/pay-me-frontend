@@ -171,7 +171,6 @@ function PlayerCard({
       <div className="player-header">
         <span className="player-flag">{player.flag}</span>
         <h2 className="player-name">{player.name}</h2>
-        <p className="player-label">{player.label}</p>
       </div>
 
       <div className="player-balance">
