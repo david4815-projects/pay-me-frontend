@@ -37,6 +37,7 @@ function PlayerCard({
   btcAmountForUri: string | null
 }) {
   const [copied, setCopied] = useState(false)
+  const [showQr, setShowQr] = useState(false)
   const uri = `bitcoin:${playerData.address}`
   const currentUri = btcAmountForUri ? `${uri}?amount=${btcAmountForUri}` : uri
 
@@ -62,18 +63,29 @@ function PlayerCard({
       </div>
 
       {!isMobile && (
-        btcAmountForUri ? (
+        showQr ? (
           <>
-            <div className="qr-wrapper">
-              <QRCodeSVG value={currentUri} size={150} />
-            </div>
-            <p className="amount-display">{btcAmountForUri} BTC</p>
+            {btcAmountForUri ? (
+              <>
+                <div className="qr-wrapper">
+                  <QRCodeSVG value={currentUri} size={150} />
+                </div>
+                <p className="amount-display">{btcAmountForUri} BTC</p>
+              </>
+            ) : (
+              <div className="qr-placeholder">
+                <span className="qr-placeholder-icon">₿</span>
+                <p>Enter an amount to generate the QR</p>
+              </div>
+            )}
+            <button className="btn-toggle-qr" onClick={() => setShowQr(false)}>
+              Hide QR ▲
+            </button>
           </>
         ) : (
-          <div className="qr-placeholder">
-            <span className="qr-placeholder-icon">₿</span>
-            <p>Enter an amount to generate the QR</p>
-          </div>
+          <button className="btn-toggle-qr" onClick={() => setShowQr(true)}>
+            Show QR ▼
+          </button>
         )
       )}
 

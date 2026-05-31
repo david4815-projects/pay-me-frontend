@@ -336,6 +336,24 @@ body {
   color: #f7931a;
 }
 
+.btn-toggle-qr {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #888;
+  font-size: 0.65rem;
+  font-family: 'Courier New', monospace;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+
+.btn-toggle-qr:hover {
+  border-color: #f7931a;
+  color: #f7931a;
+}
+
 /* Card actions */
 
 .card-actions {
@@ -450,6 +468,17 @@ body {
 .error {
   text-align: center;
   color: #ff4444;
+}
+
+/* Desktop — QR al final para no tapar la cara */
+
+@media (min-width: 601px) {
+  .player-header  { order: 1; }
+  .player-balance { order: 2; }
+  .card-actions   { order: 3; }
+  .qr-wrapper,
+  .qr-placeholder { order: 4; }
+  .amount-display { order: 5; }
 }
 
 /* Mobile */
