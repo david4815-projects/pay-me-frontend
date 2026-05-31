@@ -10,11 +10,14 @@ interface PlayerData {
   address: string
   totalBtc: number
   totalUsd: number
+  votes: number
   percent: number
 }
 
 interface VersusData {
   btcPrice: number
+  totalRaisedUsd: number
+  totalVotes: number
   messi: PlayerData
   ronaldo: PlayerData
 }
@@ -53,8 +56,9 @@ function PlayerCard({
 
       <div className="player-balance">
         <p className="player-usd">
-          ${playerData.totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+          ${playerData.totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </p>
+        <p className="player-votes">{playerData.votes} {playerData.votes === 1 ? 'vote' : 'votes'}</p>
       </div>
 
       {!isMobile && (
@@ -68,18 +72,18 @@ function PlayerCard({
         ) : (
           <div className="qr-placeholder">
             <span className="qr-placeholder-icon">₿</span>
-            <p>Ingresá un monto para generar el QR</p>
+            <p>Enter an amount to generate the QR</p>
           </div>
         )
       )}
 
       <div className="card-actions">
         <button onClick={handleCopy} className="btn-copy">
-          {copied ? '✓ Copiado' : 'Copiar dirección'}
+          {copied ? '✓ Copied!' : '📋 Copy Address'}
         </button>
         {isMobile && btcAmountForUri && (
           <a href={currentUri} className="btn-open">
-            Abrir wallet
+            👛 Open Wallet
           </a>
         )}
       </div>
@@ -147,16 +151,32 @@ function App() {
     ? '/cr7Fondo.png'
     : undefined
 
+  const leadingBy = data
+    ? Math.abs(data.messi.totalUsd - data.ronaldo.totalUsd)
+    : 0
+
+  const leaderName = data
+    ? data.messi.percent > data.ronaldo.percent ? 'Messi'
+    : data.ronaldo.percent > data.messi.percent ? 'Ronaldo'
+    : null
+    : null
+
   return (
     <div className="container">
       {bgImage && <div className="global-bg" style={{ backgroundImage: `url(${bgImage})` }} />}
 
-      {error && <p className="error">No se pudo conectar con el servidor</p>}
+      {error && <p className="error">Could not connect to server</p>}
 
       {data && (
         <>
+          <div className="site-header">
+            <p className="site-tagline">🏆 Community GOAT Battle</p>
+            <p className="site-description">Every satoshi is a vote. Support your legend.</p>
+          </div>
+
           <div className="converter-section">
             <p className="converter-title">Choose your GOAT! 🐐</p>
+            <p className="converter-subtitle">Donation amount</p>
             <div className="converter">
               <div className="input-group">
                 <label>USD</label>
@@ -187,13 +207,30 @@ function App() {
             )}
           </div>
 
-          <div className="progress-row">
-            <span className="progress-label">Messi {data.messi.percent}%</span>
-            <div className="progress-bar">
-              <div className="progress-messi" style={{ width: `${data.messi.percent}%` }} />
-              <div className="progress-ronaldo" style={{ width: `${data.ronaldo.percent}%` }} />
+          <div className="stats-bar">
+            <div className="stat">
+              <span className="stat-value">${data.totalRaisedUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              <span className="stat-label">Total raised</span>
             </div>
-            <span className="progress-label">{data.ronaldo.percent}% Ronaldo</span>
+            <div className="stat-divider">·</div>
+            <div className="stat">
+              <span className="stat-value">{data.totalVotes}</span>
+              <span className="stat-label">Total votes</span>
+            </div>
+          </div>
+
+          <div className="progress-section">
+            <div className="progress-row">
+              <span className="progress-label">Messi {data.messi.percent}%</span>
+              <div className="progress-bar">
+                <div className="progress-messi" style={{ width: `${data.messi.percent}%` }} />
+                <div className="progress-ronaldo" style={{ width: `${data.ronaldo.percent}%` }} />
+              </div>
+              <span className="progress-label">{data.ronaldo.percent}% Ronaldo</span>
+            </div>
+            {leaderName && leadingBy > 0 && (
+              <p className="leading-text">🏆 {leaderName} leading by ${leadingBy.toFixed(2)}</p>
+            )}
           </div>
 
           <div className="versus-grid">
