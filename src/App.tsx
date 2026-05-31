@@ -6,11 +6,17 @@ import './App.css'
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
-interface VersusData {
-  btcPrice: number
+interface PlayerData {
+  address: string
   totalBtc: number
   totalUsd: number
-  address: string
+  percent: number
+}
+
+interface VersusData {
+  btcPrice: number
+  messi: PlayerData
+  ronaldo: PlayerData
 }
 
 const players = [
@@ -20,22 +26,19 @@ const players = [
 
 function PlayerCard({
   player,
-  usd,
-  address,
+  playerData,
   btcAmountForUri,
 }: {
   player: typeof players[0]
-  usd: number
-  address: string
+  playerData: PlayerData
   btcAmountForUri: string | null
 }) {
   const [copied, setCopied] = useState(false)
-
-  const uri = `bitcoin:${address}`
+  const uri = `bitcoin:${playerData.address}`
   const currentUri = btcAmountForUri ? `${uri}?amount=${btcAmountForUri}` : uri
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(address)
+    navigator.clipboard.writeText(playerData.address)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -50,11 +53,10 @@ function PlayerCard({
 
       <div className="player-balance">
         <p className="player-usd">
-          ${usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+          ${playerData.totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
         </p>
       </div>
 
-      {/* QR solo en desktop */}
       {!isMobile && (
         btcAmountForUri ? (
           <>
@@ -127,8 +129,6 @@ function App() {
     ? btcFloat.toFixed(8).replace(/0+$/, '').replace(/\.$/, '')
     : null
 
-  const totalUsd = data?.totalUsd ?? 0
-
   return (
     <div className="container">
       <header>
@@ -140,7 +140,6 @@ function App() {
 
       {data && (
         <>
-          {/* Converter arriba — el usuario elige el monto antes de elegir jugador */}
           <div className="converter-section">
             <p className="converter-title">¿Cuánto querés donar?</p>
             <div className="converter">
@@ -174,26 +173,24 @@ function App() {
           </div>
 
           <div className="progress-row">
-            <span className="progress-label">Messi 50%</span>
+            <span className="progress-label">Messi {data.messi.percent}%</span>
             <div className="progress-bar">
-              <div className="progress-messi" style={{ width: '50%' }} />
-              <div className="progress-ronaldo" style={{ width: '50%' }} />
+              <div className="progress-messi" style={{ width: `${data.messi.percent}%` }} />
+              <div className="progress-ronaldo" style={{ width: `${data.ronaldo.percent}%` }} />
             </div>
-            <span className="progress-label">50% Ronaldo</span>
+            <span className="progress-label">{data.ronaldo.percent}% Ronaldo</span>
           </div>
 
           <div className="versus-grid">
             <PlayerCard
               player={players[0]}
-              usd={totalUsd}
-              address={data.address}
+              playerData={data.messi}
               btcAmountForUri={btcAmountForUri}
             />
             <div className="vs-divider">⚔️</div>
             <PlayerCard
               player={players[1]}
-              usd={totalUsd}
-              address={data.address}
+              playerData={data.ronaldo}
               btcAmountForUri={btcAmountForUri}
             />
           </div>
